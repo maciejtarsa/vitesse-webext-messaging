@@ -1,8 +1,19 @@
 <script setup lang="ts">
 import { useToggle } from '@vueuse/core'
 import 'uno.css'
+import { sendMessage } from 'webext-bridge/content-script'
 
 const [show, toggle] = useToggle(false)
+
+const clickCount = ref(1)
+async function doContentScriptToBackground() {
+  const rz = await sendMessage('content-script=>background', {
+    count: clickCount.value,
+  }, 'background')
+  clickCount.value++
+  // eslint-disable-next-line no-console
+  console.log('====> doContentScriptToBackground sendMessage rz :', rz)
+}
 </script>
 
 <template>
@@ -18,6 +29,9 @@ const [show, toggle] = useToggle(false)
         Vitesse WebExt
       </h1>
       <SharedSubtitle />
+      <button @click="doContentScriptToBackground()">
+        content-script=>background
+      </button>
     </div>
     <button
       class="flex w-10 h-10 rounded-full shadow cursor-pointer border-none"
